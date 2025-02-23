@@ -37,6 +37,13 @@ func pullImage(client *client.Client, name string) error {
 				log.Printf("failed to close image pull response: %v", err)
 			}
 		}(pull)
+
+		// Read the output stream to ensure the pull is completed before returning
+		_, err = io.Copy(io.Discard, pull)
+		if err != nil {
+			log.Printf("failed to read image pull response: %v", err)
+			return err
+		}
 	} else {
 		return err
 	}
