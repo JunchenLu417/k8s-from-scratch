@@ -20,7 +20,7 @@ pipeline {
 
                                     sh 'go version'
                                     sh 'go mod tidy || true'
-                                    sh 'go test -v github.com/JunchenLu417/k8s-from-scratch/init/test -run TestCreateContainer'
+                                    sh 'sudo go test -v github.com/JunchenLu417/k8s-from-scratch/init/test -run TestCreateContainer'
                                 }
                             }
                         }
