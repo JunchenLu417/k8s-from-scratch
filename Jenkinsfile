@@ -15,14 +15,18 @@ pipeline {
             }
         }
 
-        script {
-			// 1. check the container cloud is setup correctly
-			def checkEnvStages = checkEnv.checkEnv(parallelCreateContainers)
-			for (stageBlock in checkEnvStages) {
-				stageBlock
+        stage('Execute Environment Setup Check') {
+			agent any
+			steps {
+				script {
+					def checkEnvStages = checkEnv.checkEnv(parallelCreateContainers)
+					for (stageBlock in checkEnvStages) {
+						stageBlock()
+					}
+				}
 			}
-
-			// 2.
 		}
+
+
     }
 }
