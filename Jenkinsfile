@@ -10,16 +10,19 @@ pipeline {
 				script {
 					// Load the external Groovy script inside a script block
 					parallelCreateContainers = load 'devops/containers/create.groovy'
+					checkEnv = load 'devops/env_setup.groovy'
 				}
             }
         }
 
-        stage('[env] phase2: create containers') {
-			steps {
-				script {
-					parallel parallelCreateContainers
-                }
-            }
-        }
+        script {
+			// 1. check the container cloud is setup correctly
+			def checkEnvStages = checkEnv.checkEnv(parallelCreateContainers)
+			for (stageBlock in checkEnvStages) {
+				stageBlock
+			}
+
+			// 2.
+		}
     }
 }
