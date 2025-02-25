@@ -1,32 +1,58 @@
+
+// Assign jobs to agents, master/worker can have different jobs
+def jobsEnvCheck = [
+    "agent-0": "JobMaster",
+    "agent-1": "JobWorker",
+    "agent-2": "JobWorker"
+]
+
+// Convert jobs definition to parallel execution format
+def parallelCreateContainers = jobsEnvCheck.collectEntries { agentLabel, job ->
+    ["${agentLabel}" : {
+		stage("Stage: ${job} on ${agentLabel}") {
+			node(agentLabel) {  // designate the node to execute the job
+				switch (job) {
+					case "JobMaster":
+						echo "[master] placeholder..."
+						sh script: "hostname"
+						break
+
+					case "JobWorker":
+						echo "[worker] placeholder..."
+						sh script: "hostname"
+						break
+
+					default:
+						echo "Unknown job: ${job}"
+				}
+
+				// work that all the nodes should do
+				checkout([
+					$class: 'GitSCM',
+					branches: [[name: 'main']],
+					userRemoteConfigs: [[url: 'https://github.com/JunchenLu417/k8s-from-scratch.git']]
+				])
+				sh 'sudo go test -v -count=1 github.com/JunchenLu417/k8s-from-scratch/init/test -run TestCreateContainer'
+			}
+		}
+	}]
+}
+
 pipeline {
-	agent none
+	agent none  // No single default agent; jobs are assigned dynamically
 
     stages {
-		stage('[2] create containers') {
+		stage('Launch Test...') {
+			agent any  // Run on any available agent
+            steps {
+				echo '[Jenkins] launch the test set for k8s-from-scratch project :)'
+            }
+        }
+
+        stage('[env] phase2: create containers') {
 			steps {
 				script {
-					def agents = ['agent-1', 'agent-2', 'agent-0']  // Add more agents here if needed
-                    def testStages = [:]  // Groovy Map (key-value pairs), parallel code blocks to run
-
-                    for (agentName in agents) {
-						testStages["[2] ${agentName} code"] = {
-							node(agentName) {
-								stage("Test on ${agentName}") {
-									checkout([
-                                        $class: 'GitSCM',
-                                        branches: [[name: 'main']],
-                                        userRemoteConfigs: [[url: 'https://github.com/JunchenLu417/k8s-from-scratch.git']]
-                                    ])
-
-                                    sh 'go version'
-                                    sh 'go mod tidy || true'
-                                    sh 'sudo go test -v -count=1 github.com/JunchenLu417/k8s-from-scratch/init/test -run TestCreateContainer'
-                                }
-                            }
-                        }
-                    }
-
-                    parallel testStages
+					parallel parallelCreateContainers
                 }
             }
         }
