@@ -7,7 +7,10 @@ pipeline {
             steps {
 				echo '[Jenkins] launch the test set for k8s-from-scratch project :)'
 
-				parallelCreateContainers = load 'devops/containers/create.groovy'
+				script {
+					// Load the external Groovy script inside a script block
+					parallelCreateContainers = load 'devops/containers/create.groovy'
+				}
             }
         }
 
