@@ -10,6 +10,7 @@ pipeline {
 				script {
 					// Load the external Groovy script inside a script block
 					parallelCreateContainers = load 'devops/containers/create.groovy'
+					parallelRemoveContainers = load 'devops/containers/remove.groovy'
 					checkEnv = load 'devops/env_setup.groovy'
 				}
             }
@@ -19,7 +20,7 @@ pipeline {
 			agent any
 			steps {
 				script {
-					def checkEnvStages = checkEnv.checkEnv(parallelCreateContainers)
+					def checkEnvStages = checkEnv.checkEnv(parallelCreateContainers, parallelRemoveContainers)
 					for (stageBlock in checkEnvStages) {
 						stageBlock()
 					}
