@@ -1,0 +1,12 @@
+kind: Pod
+metadata:
+  name: test-localhost
+spec:
+  # Two containers: nginx and busybox
+  containers:
+    - name: nginx-container
+      image: nginx:latest
+
+    - name: busybox-container
+      image: busybox
+      command: ["sh", "-c", "tail -f /dev/null"]

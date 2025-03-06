@@ -2,7 +2,11 @@ module github.com/JunchenLu417/k8s-from-scratch
 
 go 1.22.2
 
-require github.com/docker/docker v28.0.0+incompatible
+require (
+	github.com/docker/docker v28.0.0+incompatible
+	golang.org/x/net v0.35.0
+	gopkg.in/yaml.v3 v3.0.1
+)
 
 require (
 	github.com/Microsoft/go-winio v0.6.2 // indirect
@@ -27,7 +31,6 @@ require (
 	go.opentelemetry.io/otel/metric v1.34.0 // indirect
 	go.opentelemetry.io/otel/sdk v1.34.0 // indirect
 	go.opentelemetry.io/otel/trace v1.34.0 // indirect
-	golang.org/x/net v0.35.0 // indirect
 	golang.org/x/sys v0.30.0 // indirect
 	golang.org/x/time v0.10.0 // indirect
 	gotest.tools/v3 v3.5.0 // indirect
